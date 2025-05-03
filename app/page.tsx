@@ -56,8 +56,11 @@ export default function Home() {
               <div className="form-group">
                 <label htmlFor="model-select" className="form-label">Model</label>
                 <select id="model-select" className="form-select">
+                  <option value="gpt-image-1">GPT-image-1</option>
                   <option value="dall-e-3">DALL-E 3</option>
                   <option value="dall-e-2">DALL-E 2</option>
+                  <option value="gpt-4o">GPT-4o</option>
+                  <option value="gpt-4-vision">GPT-4 Vision</option>
                 </select>
               </div>
 
@@ -89,7 +92,7 @@ export default function Home() {
                 </select>
               </div>
 
-              {/* Image Count (DALL-E 2 only) */}
+              {/* Image Count (DALL-E 2 and GPT-image-1) */}
               <div className="form-group" id="image-count-container" style={{ display: 'none' }}>
                 <label htmlFor="image-count" className="form-label">Number of Images</label>
                 <select id="image-count" className="form-select">
@@ -97,6 +100,17 @@ export default function Home() {
                   <option value="2">2</option>
                   <option value="3">3</option>
                   <option value="4">4</option>
+                </select>
+              </div>
+              
+              {/* Detail Level (GPT-image-1 only) */}
+              <div className="form-group" id="detail-container" style={{ display: 'none' }}>
+                <label htmlFor="detail-select" className="form-label">Detail Level</label>
+                <select id="detail-select" className="form-select">
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="max">Maximum</option>
                 </select>
               </div>
             </div>
