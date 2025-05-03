@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import Header from './components/Header';
-import ApiKeySection from './components/ApiKeySection';
 import ParametersSection from './components/ParametersSection';
 import PromptSection from './components/PromptSection';
 import ImageUploadSection from './components/ImageUploadSection';
@@ -21,7 +20,6 @@ export default function Home() {
     <div>
       <Header />
       <div className="container">
-        <ApiKeySection />
         <ParametersSection />
         <PromptSection />
         <ImageUploadSection />

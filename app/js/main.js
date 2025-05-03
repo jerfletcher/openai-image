@@ -39,13 +39,10 @@ export function initApp() {
   const storedApiKey = getApiKey();
   if (storedApiKey) {
     appState.apiKey = storedApiKey;
-    document.getElementById('api-key-input').value = storedApiKey;
     try {
       initializeClient(storedApiKey);
-      showApiKeyStatus(true);
     } catch (error) {
       console.error('Failed to initialize client with stored API key:', error);
-      showApiKeyStatus(false);
     }
   }
   
@@ -92,10 +89,6 @@ export function initApp() {
  * Initialize event listeners for UI elements
  */
 function initEventListeners() {
-  // API Key form
-  document.getElementById('api-key-form').addEventListener('submit', handleApiKeySubmit);
-  document.getElementById('clear-api-key').addEventListener('click', handleClearApiKey);
-  
   // Model selection
   document.getElementById('model-select').addEventListener('change', handleModelChange);
   
@@ -129,18 +122,7 @@ function initEventListeners() {
   document.getElementById('import-settings').addEventListener('click', handleImportSettings);
   document.getElementById('settings-file-input').addEventListener('change', handleSettingsFileSelect);
   
-  // Settings modal
-  document.getElementById('settings-button').addEventListener('click', () => {
-    const modal = document.getElementById('settings-modal');
-    modal.classList.add('open');
-  });
-  
-  document.querySelectorAll('.modal .close').forEach(button => {
-    button.addEventListener('click', () => {
-      const modal = button.closest('.modal');
-      modal.classList.remove('open');
-    });
-  });
+  // Note: API Key form and modal events are now handled by React components
 }
 
 /**
@@ -222,59 +204,7 @@ function updateModelDependentControls(modelId) {
   }
 }
 
-/**
- * Handle API key form submission
- * @param {Event} event - The form submit event
- */
-function handleApiKeySubmit(event) {
-  event.preventDefault();
-  
-  const apiKeyInput = document.getElementById('api-key-input');
-  const apiKey = apiKeyInput.value.trim();
-  
-  if (apiKey) {
-    try {
-      initializeClient(apiKey);
-      saveApiKey(apiKey);
-      appState.apiKey = apiKey;
-      showApiKeyStatus(true);
-      showSnackbar('API key saved successfully');
-    } catch (error) {
-      console.error('Failed to initialize client:', error);
-      showApiKeyStatus(false);
-      showSnackbar('Failed to initialize client with provided API key');
-    }
-  } else {
-    showSnackbar('Please enter a valid API key');
-  }
-}
-
-/**
- * Handle clearing the API key
- */
-function handleClearApiKey() {
-  clearApiKey();
-  document.getElementById('api-key-input').value = '';
-  appState.apiKey = null;
-  showApiKeyStatus(false);
-  showSnackbar('API key cleared');
-}
-
-/**
- * Show API key status
- * @param {boolean} isValid - Whether the API key is valid
- */
-function showApiKeyStatus(isValid) {
-  const statusElement = document.getElementById('api-key-status');
-  
-  if (isValid) {
-    statusElement.textContent = 'API Key: Valid';
-    statusElement.className = 'api-key-status valid';
-  } else {
-    statusElement.textContent = 'API Key: Not Set';
-    statusElement.className = 'api-key-status invalid';
-  }
-}
+// API Key handling is now managed by the React component in SettingsSection.tsx
 
 /**
  * Handle model change
@@ -502,10 +432,13 @@ function handleClearImages() {
  * Handle generate button click
  */
 async function handleGenerateClick() {
-  if (!appState.apiKey) {
+  // Get API key from localStorage directly
+  const apiKey = getApiKey();
+  if (!apiKey) {
     showSnackbar('Please set your OpenAI API key first');
     return;
   }
+  appState.apiKey = apiKey;
   
   const promptTextarea = document.getElementById('prompt-textarea');
   const prompt = promptTextarea.value.trim();
