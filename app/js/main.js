@@ -15,10 +15,11 @@ import { initMaterialComponents, showSnackbar, createDialog } from './materialDe
 // Application state
 let appState = {
   apiKey: null,
-  selectedModel: 'dall-e-3',
+  selectedModel: 'gpt-image-1',
   selectedSize: '1024x1024',
   selectedQuality: 'standard',
   selectedStyle: 'vivid',
+  selectedDetail: 'medium',
   imageCount: 1,
   uploadedImages: [],
   uploadedImageLabels: [],
@@ -107,8 +108,11 @@ function initEventListeners() {
   // Style selection (DALL-E 3 only)
   document.getElementById('style-select').addEventListener('change', handleStyleChange);
   
-  // Image count (DALL-E 2 only)
+  // Image count (DALL-E 2 and GPT-image-1)
   document.getElementById('image-count').addEventListener('change', handleImageCountChange);
+  
+  // Detail level (GPT-image-1 only)
+  document.getElementById('detail-select').addEventListener('change', handleDetailChange);
   
   // Prompt textarea
   document.getElementById('prompt-textarea').addEventListener('input', handlePromptChange);
@@ -184,18 +188,22 @@ function updateModelDependentControls(modelId) {
     if (modelId === 'dall-e-3') {
       document.getElementById('quality-container').style.display = 'block';
       document.getElementById('style-container').style.display = 'block';
+      document.getElementById('detail-container').style.display = 'none';
       imageCountContainer.style.display = 'none';
     } else if (modelId === 'gpt-4o' || modelId === 'gpt-4-vision') {
       document.getElementById('quality-container').style.display = 'none';
       document.getElementById('style-container').style.display = 'none';
+      document.getElementById('detail-container').style.display = 'none';
       imageCountContainer.style.display = 'none';
     } else if (modelId === 'gpt-image-1') {
       document.getElementById('quality-container').style.display = 'none';
       document.getElementById('style-container').style.display = 'none';
+      document.getElementById('detail-container').style.display = 'block';
       imageCountContainer.style.display = 'block';
     } else {
       document.getElementById('quality-container').style.display = 'none';
       document.getElementById('style-container').style.display = 'none';
+      document.getElementById('detail-container').style.display = 'none';
       imageCountContainer.style.display = 'block';
     }
   }
@@ -330,6 +338,21 @@ function handleImageCountChange(event) {
   saveSettings({
     ...appState,
     imageCount: count
+  });
+}
+
+/**
+ * Handle detail level change for GPT-image-1
+ * @param {Event} event - The change event
+ */
+function handleDetailChange(event) {
+  const detail = event.target.value;
+  appState.selectedDetail = detail;
+  
+  // Save settings
+  saveSettings({
+    ...appState,
+    selectedDetail: detail
   });
 }
 
@@ -513,6 +536,7 @@ async function handleGenerateClick() {
       n: appState.imageCount,
       quality: appState.selectedQuality,
       style: appState.selectedStyle,
+      detail: appState.selectedDetail,
       imageBase64: combinedImageBase64
     };
     

@@ -218,7 +218,7 @@ async function generateImagesWithGPTVision(params) {
  * @returns {Promise} - Promise resolving to generated images
  */
 async function generateImagesWithGPTImage(params) {
-  const { prompt, size, n, imageBase64 } = params;
+  const { prompt, size, n, imageBase64, detail } = params;
   
   // Prepare request body for GPT-image-1
   const requestBody = {
@@ -226,7 +226,8 @@ async function generateImagesWithGPTImage(params) {
     prompt,
     size: size || '1024x1024',
     n: n || 1,
-    response_format: "b64_json" // Request base64 encoded images
+    response_format: "b64_json", // Request base64 encoded images
+    detail: detail || 'medium'
   };
   
   // If image is provided and it's a valid base64 string

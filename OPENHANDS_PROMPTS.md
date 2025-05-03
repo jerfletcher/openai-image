@@ -114,6 +114,20 @@ For testing the user interface:
 
 When modifying the application, consider the following:
 
+### Development Workflow
+
+1. **Task Completion**:
+   - After completing each task, always commit your changes
+   - Create a pull request (PR) for review
+   - Include a clear description of the changes made and their purpose
+   - Wait for approval before merging or starting the next task
+
+2. **Version Control Best Practices**:
+   - Create a new branch for each task or feature
+   - Make atomic commits with descriptive messages
+   - Keep PRs focused on a single task or feature
+   - Include tests when appropriate
+
 ### Adding New Features
 
 1. **New API Parameters**:
