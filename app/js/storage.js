@@ -10,6 +10,9 @@ const STORAGE_KEYS = {
   HISTORY: 'openai_image_generator_history'
 };
 
+// In-memory storage for settings
+let inMemorySettings = null;
+
 /**
  * Save API key to local storage
  * @param {string} apiKey - The OpenAI API key
@@ -41,25 +44,19 @@ export function clearApiKey() {
 }
 
 /**
- * Save settings to local storage
+ * Save settings to in-memory storage
  * @param {Object} settings - The settings object to save
  */
 export function saveSettings(settings) {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
-  }
+  inMemorySettings = settings;
 }
 
 /**
- * Get settings from local storage
+ * Get settings from in-memory storage
  * @returns {Object|null} - The stored settings or null if not found
  */
 export function getSettings() {
-  if (typeof window !== 'undefined') {
-    const settings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-    return settings ? JSON.parse(settings) : null;
-  }
-  return null;
+  return inMemorySettings;
 }
 
 /**
