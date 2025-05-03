@@ -16,7 +16,7 @@ export default function Home() {
       <header className="app-header">
         <div className="container">
           <h1 className="app-title">OpenAI Image Generator</h1>
-          <p className="app-description">Generate images using OpenAI's DALL-E models</p>
+          <p className="app-description">Generate images using OpenAI's DALL-E and GPT-4o models</p>
         </div>
       </header>
 

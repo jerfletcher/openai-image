@@ -5,7 +5,7 @@ A client-side web application using Next.js and vanilla JavaScript that allows u
 ## Features
 
 - **API Key Management**: Securely store your OpenAI API key in browser's localStorage
-- **Model Selection**: Choose between DALL-E 2 and DALL-E 3 models
+- **Model Selection**: Choose between DALL-E 2, DALL-E 3, and GPT-4o models
 - **Parameter Controls**: Adjust size, quality, style, and number of images based on the selected model
 - **Text Prompt Input**: Enter detailed descriptions for image generation
 - **Reference Images**: Upload images to use as reference or style inspiration
@@ -59,6 +59,8 @@ A client-side web application using Next.js and vanilla JavaScript that allows u
 - This is a client-side application, which means your API key is stored in your browser's localStorage and sent directly from your browser to OpenAI. Never share your API key with others.
 - The application respects OpenAI's API limitations and parameters for each model.
 - Image combination is implemented to work around the limitation that OpenAI's API doesn't directly support multiple distinct image inputs.
+- GPT-4o model support allows for image generation using the chat completions API with image_url response format.
+- When using GPT-4o, you can include reference images which will be sent as part of the message content.
 
 ## License
 

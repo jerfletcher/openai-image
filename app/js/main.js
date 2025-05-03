@@ -180,10 +180,14 @@ function updateModelDependentControls(modelId) {
     // Set default size
     sizeSelect.value = appState.selectedSize;
     
-    // Show/hide DALL-E 3 specific controls
+    // Show/hide model-specific controls
     if (modelId === 'dall-e-3') {
       document.getElementById('quality-container').style.display = 'block';
       document.getElementById('style-container').style.display = 'block';
+      imageCountContainer.style.display = 'none';
+    } else if (modelId === 'gpt-4o') {
+      document.getElementById('quality-container').style.display = 'none';
+      document.getElementById('style-container').style.display = 'none';
       imageCountContainer.style.display = 'none';
     } else {
       document.getElementById('quality-container').style.display = 'none';

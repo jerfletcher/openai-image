@@ -28,6 +28,7 @@ export function getAvailableModels() {
   return [
     { id: 'dall-e-2', name: 'DALL-E 2', sizes: ['256x256', '512x512', '1024x1024'] },
     { id: 'dall-e-3', name: 'DALL-E 3', sizes: ['1024x1024', '1792x1024', '1024x1792'], styles: ['vivid', 'natural'] },
+    { id: 'gpt-4o', name: 'GPT-4o', sizes: ['1024x1024', '1792x1024', '1024x1792'] },
   ];
 }
 
@@ -42,6 +43,11 @@ export async function generateImages(params) {
   }
 
   const { prompt, model, size, n, quality, style, imageBase64 } = params;
+  
+  // Check if we're using GPT-4o for image generation
+  if (model === 'gpt-4o') {
+    return await generateImagesWithGPT4o(params);
+  }
   
   // Prepare request body based on model
   const requestBody = {
@@ -84,6 +90,116 @@ export async function generateImages(params) {
     return data;
   } catch (error) {
     console.error('Error generating images:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generate images using GPT-4o model
+ * @param {Object} params - Parameters for image generation
+ * @returns {Promise} - Promise resolving to generated images
+ */
+async function generateImagesWithGPT4o(params) {
+  const { prompt, size, imageBase64 } = params;
+  
+  // Prepare the messages array
+  const messages = [
+    {
+      role: "user",
+      content: [
+        { type: "text", text: prompt }
+      ]
+    }
+  ];
+  
+  // If image is provided and it's a valid base64 string, add it to the message
+  if (imageBase64 && typeof imageBase64 === 'string') {
+    // Extract the MIME type and base64 data
+    const matches = imageBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    
+    if (matches && matches.length === 3) {
+      const mimeType = matches[1];
+      const base64Data = matches[2];
+      
+      // Add the image to the first message's content
+      messages[0].content.push({
+        type: "image_url",
+        image_url: {
+          url: imageBase64
+        }
+      });
+    }
+  }
+  
+  // Prepare the request body
+  const requestBody = {
+    model: "gpt-4o",
+    messages: messages,
+    max_tokens: 1000,
+    response_format: { type: "image_url" }
+  };
+  
+  try {
+    // Make the API call to OpenAI
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${openaiClient.apiKey}`
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || 'Failed to generate images with GPT-4o');
+    }
+
+    const data = await response.json();
+    
+    // Transform the response to match the format of the DALL-E API
+    // Extract image URL from the response
+    const content = data.choices[0]?.message?.content;
+    
+    // Parse the content to extract the image URL
+    // The content might be in different formats, so we need to handle various cases
+    let imageUrl = '';
+    
+    try {
+      // Try to parse as JSON first
+      const jsonContent = JSON.parse(content);
+      if (jsonContent && jsonContent.url) {
+        imageUrl = jsonContent.url;
+      }
+    } catch (e) {
+      // If not JSON, check if it's a direct URL
+      if (content && (content.startsWith('http://') || content.startsWith('https://'))) {
+        imageUrl = content;
+      } else if (content && content.includes('http')) {
+        // Try to extract URL from text
+        const urlMatch = content.match(/(https?:\/\/[^\s]+)/);
+        if (urlMatch) {
+          imageUrl = urlMatch[0];
+        }
+      }
+    }
+    
+    // If we couldn't extract a URL, use the content as is
+    if (!imageUrl) {
+      imageUrl = content;
+    }
+    
+    return {
+      created: data.created,
+      data: [
+        {
+          url: imageUrl,
+          revised_prompt: prompt
+        }
+      ]
+    };
+  } catch (error) {
+    console.error('Error generating images with GPT-4o:', error);
     throw error;
   }
 }

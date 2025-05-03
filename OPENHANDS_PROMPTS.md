@@ -40,6 +40,18 @@ The application follows a modular architecture where vanilla JavaScript is integ
    - Makes an API call to OpenAI using `apiClient.js`
    - Displays the results and saves them to history
 
+### Model-Specific Handling
+
+The application supports multiple OpenAI models with different capabilities:
+
+1. **DALL-E 2 & DALL-E 3**: Uses the standard `/images/generations` endpoint
+   - DALL-E 2 supports generating multiple images at once
+   - DALL-E 3 supports quality and style parameters
+
+2. **GPT-4o**: Uses the `/chat/completions` endpoint with image_url response format
+   - Supports including reference images directly in the message content
+   - Formats the response to match the structure of DALL-E responses for consistent handling
+
 ### Local Storage Usage
 
 The application uses localStorage for three main purposes:
@@ -112,6 +124,7 @@ When modifying the application, consider the following:
 2. **Supporting New Models**:
    - Add new model information to `getAvailableModels()` in `apiClient.js`
    - Update UI logic to show/hide relevant controls based on model
+   - For models that use different API endpoints (like GPT-4o), implement separate handler functions
 
 3. **Enhanced Image Processing**:
    - Extend `imageProcessor.js` with new image manipulation functions
