@@ -185,10 +185,14 @@ function updateModelDependentControls(modelId) {
       document.getElementById('quality-container').style.display = 'block';
       document.getElementById('style-container').style.display = 'block';
       imageCountContainer.style.display = 'none';
-    } else if (modelId === 'gpt-4o') {
+    } else if (modelId === 'gpt-4o' || modelId === 'gpt-4-vision') {
       document.getElementById('quality-container').style.display = 'none';
       document.getElementById('style-container').style.display = 'none';
       imageCountContainer.style.display = 'none';
+    } else if (modelId === 'gpt-image-1') {
+      document.getElementById('quality-container').style.display = 'none';
+      document.getElementById('style-container').style.display = 'none';
+      imageCountContainer.style.display = 'block';
     } else {
       document.getElementById('quality-container').style.display = 'none';
       document.getElementById('style-container').style.display = 'none';

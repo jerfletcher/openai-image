@@ -29,6 +29,8 @@ export function getAvailableModels() {
     { id: 'dall-e-2', name: 'DALL-E 2', sizes: ['256x256', '512x512', '1024x1024'] },
     { id: 'dall-e-3', name: 'DALL-E 3', sizes: ['1024x1024', '1792x1024', '1024x1792'], styles: ['vivid', 'natural'] },
     { id: 'gpt-4o', name: 'GPT-4o', sizes: ['1024x1024', '1792x1024', '1024x1792'] },
+    { id: 'gpt-4-vision', name: 'GPT-4 Vision', sizes: ['1024x1024', '1792x1024', '1024x1792'] },
+    { id: 'gpt-image-1', name: 'GPT-image-1', sizes: ['1024x1024', '1792x1024', '1024x1792'] },
   ];
 }
 
@@ -44,12 +46,17 @@ export async function generateImages(params) {
 
   const { prompt, model, size, n, quality, style, imageBase64 } = params;
   
-  // Check if we're using GPT-4o for image generation
-  if (model === 'gpt-4o') {
-    return await generateImagesWithGPT4o(params);
+  // Check if we're using GPT-4o or GPT-4-vision for image generation
+  if (model === 'gpt-4o' || model === 'gpt-4-vision') {
+    return await generateImagesWithGPTVision(params);
   }
   
-  // Prepare request body based on model
+  // Check if we're using GPT-image-1 for image generation
+  if (model === 'gpt-image-1') {
+    return await generateImagesWithGPTImage(params);
+  }
+  
+  // Prepare request body based on model (DALL-E models)
   const requestBody = {
     prompt,
     model: model || 'dall-e-3',
@@ -95,12 +102,12 @@ export async function generateImages(params) {
 }
 
 /**
- * Generate images using GPT-4o model
+ * Generate images using GPT-4o or GPT-4-vision models
  * @param {Object} params - Parameters for image generation
  * @returns {Promise} - Promise resolving to generated images
  */
-async function generateImagesWithGPT4o(params) {
-  const { prompt, size, imageBase64 } = params;
+async function generateImagesWithGPTVision(params) {
+  const { prompt, model, size, imageBase64 } = params;
   
   // Prepare the messages array
   const messages = [
@@ -133,7 +140,7 @@ async function generateImagesWithGPT4o(params) {
   
   // Prepare the request body
   const requestBody = {
-    model: "gpt-4o",
+    model: model === 'gpt-4-vision' ? "gpt-4-vision-preview" : "gpt-4o",
     messages: messages,
     max_tokens: 1000,
     response_format: { type: "image_url" }
@@ -152,7 +159,7 @@ async function generateImagesWithGPT4o(params) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error?.message || 'Failed to generate images with GPT-4o');
+      throw new Error(errorData.error?.message || `Failed to generate images with ${model}`);
     }
 
     const data = await response.json();
@@ -199,7 +206,58 @@ async function generateImagesWithGPT4o(params) {
       ]
     };
   } catch (error) {
-    console.error('Error generating images with GPT-4o:', error);
+    console.error(`Error generating images with ${model}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Generate images using GPT-image-1 model
+ * @param {Object} params - Parameters for image generation
+ * @returns {Promise} - Promise resolving to generated images
+ */
+async function generateImagesWithGPTImage(params) {
+  const { prompt, size, n, imageBase64 } = params;
+  
+  // Prepare request body for GPT-image-1
+  const requestBody = {
+    model: "gpt-image-1",
+    prompt,
+    size: size || '1024x1024',
+    n: n || 1,
+  };
+  
+  // If image is provided and it's a valid base64 string
+  if (imageBase64 && typeof imageBase64 === 'string') {
+    // Extract the MIME type and base64 data
+    const matches = imageBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    
+    if (matches && matches.length === 3) {
+      // Add the reference image to the request
+      requestBody.reference_image = imageBase64;
+    }
+  }
+  
+  try {
+    // Make the API call to OpenAI
+    const response = await fetch('https://api.openai.com/v1/images/generations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${openaiClient.apiKey}`
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || 'Failed to generate images with GPT-image-1');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error generating images with GPT-image-1:', error);
     throw error;
   }
 }
