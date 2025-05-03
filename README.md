@@ -2,10 +2,20 @@
 
 A client-side web application using Next.js and vanilla JavaScript that allows users to generate images via the OpenAI API, with options for various parameters, image inputs for reference/style, local storage persistence, and settings export.
 
+## Development Guidelines
+
+When working on this project, please follow these guidelines:
+
+1. Make focused, incremental changes that address a specific feature or bug
+2. Test your changes thoroughly before committing
+3. Commit your changes with descriptive commit messages
+4. Create a pull request after completing each task or feature
+5. Include a detailed description of your changes in the PR
+
 ## Features
 
 - **API Key Management**: Securely store your OpenAI API key in browser's localStorage
-- **Model Selection**: Choose between DALL-E 2, DALL-E 3, and GPT-4o models
+- **Model Selection**: Choose between GPT-image-1, DALL-E 2, DALL-E 3, and GPT-4o models
 - **Parameter Controls**: Adjust size, quality, style, and number of images based on the selected model
 - **Text Prompt Input**: Enter detailed descriptions for image generation
 - **Reference Images**: Upload images to use as reference or style inspiration
