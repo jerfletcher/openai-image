@@ -128,6 +128,19 @@ function initEventListeners() {
   document.getElementById('export-settings').addEventListener('click', handleExportSettings);
   document.getElementById('import-settings').addEventListener('click', handleImportSettings);
   document.getElementById('settings-file-input').addEventListener('change', handleSettingsFileSelect);
+  
+  // Settings modal
+  document.getElementById('settings-button').addEventListener('click', () => {
+    const modal = document.getElementById('settings-modal');
+    modal.classList.add('open');
+  });
+  
+  document.querySelectorAll('.modal .close').forEach(button => {
+    button.addEventListener('click', () => {
+      const modal = button.closest('.modal');
+      modal.classList.remove('open');
+    });
+  });
 }
 
 /**
