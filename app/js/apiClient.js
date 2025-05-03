@@ -62,6 +62,7 @@ export async function generateImages(params) {
     model: model || 'dall-e-3',
     n: model === 'dall-e-2' ? (n || 1) : 1, // DALL-E 3 only supports n=1
     size: size || '1024x1024',
+    response_format: "b64_json" // Request base64 encoded images
   };
   
   // Add optional parameters based on model
@@ -225,6 +226,7 @@ async function generateImagesWithGPTImage(params) {
     prompt,
     size: size || '1024x1024',
     n: n || 1,
+    response_format: "b64_json" // Request base64 encoded images
   };
   
   // If image is provided and it's a valid base64 string

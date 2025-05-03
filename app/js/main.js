@@ -566,7 +566,12 @@ function displayGeneratedImages(images) {
     
     // Create image element
     const img = document.createElement('img');
-    img.src = image.url;
+    // Check if we have a base64 encoded image or a URL
+    if (image.b64_json) {
+      img.src = `data:image/png;base64,${image.b64_json}`;
+    } else {
+      img.src = image.url;
+    }
     img.className = 'result-image';
     img.alt = `Generated image ${index + 1}`;
     
@@ -575,7 +580,13 @@ function displayGeneratedImages(images) {
     downloadButton.className = 'mdc-button mdc-button--raised';
     downloadButton.innerHTML = '<span class="mdc-button__label">Download</span>';
     downloadButton.addEventListener('click', () => {
-      downloadImage(image.url, `generated-image-${index + 1}.png`);
+      if (image.b64_json) {
+        // For base64 encoded images
+        downloadBase64Image(image.b64_json, `generated-image-${index + 1}.png`);
+      } else {
+        // For URL-based images
+        downloadImage(image.url, `generated-image-${index + 1}.png`);
+      }
     });
     
     // Add elements to wrapper
@@ -598,6 +609,20 @@ function displayGeneratedImages(images) {
 function downloadImage(url, filename) {
   const link = document.createElement('a');
   link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+/**
+ * Download a base64 encoded image
+ * @param {string} base64Data - The base64 encoded image data
+ * @param {string} filename - The filename to save as
+ */
+function downloadBase64Image(base64Data, filename) {
+  const link = document.createElement('a');
+  link.href = `data:image/png;base64,${base64Data}`;
   link.download = filename;
   document.body.appendChild(link);
   link.click();
